@@ -3,7 +3,7 @@
 ### Usage
 to download user profiles/events to a csv:
 - git clone the repo (or simply copy-paste the files clevertap.py and csvdownload.py, and place them in the same folder)
-- cd to the spython directory (or the directory where you have created the above two files)
+- cd to the python directory (or the directory where you have created the above two files)
 - run csvdownload.py passing your CleverTap Account ID, Passcode, absolute path to your json file and the absolute path to your csv file. 
 -  e.g. python csvdownload.py -a WWW-YYY-ZZZZ -c AAA-BBB-CCCC -pjson ~/Desktop/query_example.json -pcsv ~/Desktop/event.csv -t event
 
