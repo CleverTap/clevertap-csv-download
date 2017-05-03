@@ -267,7 +267,7 @@ class CleverTap(object):
             f.close()
 
         except Exception, e:
-            print "%s: %s" % (e, e.read())
+            print e
             return None
 
         # Parse and return the response

@@ -83,7 +83,7 @@ def main(account_id, passcode, path_json, path_csv, type_of_download, dryrun):
     print "Downloading..."
     try:
         with open(path_json) as data_file:
-                data = json.load(data_file)
+            data = json.load(data_file)
         if type_of_download == "profile":
             result = clevertap.profiles(data, MAX_BATCH_SIZE)
         elif type_of_download == "event":
