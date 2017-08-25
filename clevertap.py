@@ -36,15 +36,19 @@ class CleverTap(object):
         def valid_actions(cls):
             return [cls.CREATE, cls.ESTIMATE, cls.LIST, cls.RESULT, cls.STOP]
 
-    def __init__(self, account_id, account_passcode):
+    def __init__(self, account_id, account_passcode, region=None):
         self.account_id         = account_id
         self.account_passcode   = account_passcode
+        self.account_region     = region
         self.cursor             = None
         self.url                = None
         self.records            = []
 
+        if self.account_region is not None:
+            self.__class__.api_hostname = "%s.%s" % (self.account_region, self.__class__.api_hostname)
+
     def __repr__(self):
-        return "%s(account_id=%s, passcode=%s)" % (self.__class__.__name__, self.account_id, self.account_passcode)
+        return "%s(account_id=%s, passcode=%s, region=%s, endpoint=%s)" % (self.__class__.__name__, self.account_id, self.account_passcode, self.account_region, self.api_endpoint)
 
 
     @property
@@ -52,7 +56,7 @@ class CleverTap(object):
         return 'https://%s/%s' % (self.__class__.api_hostname, self.__class__.api_version)
 
 
-    def upload(self, data):
+    def upload(self, data, dryRun=False):
         """upload an array of profile and/or event dicts"""
 
         # validate data
@@ -64,6 +68,8 @@ class CleverTap(object):
 
         # construct the base request url
         self.url = '/'.join([self.api_endpoint, "upload"])
+        if dryRun:
+            self.url += "?dryRun=1"
 
         # the request body is the json encoded data
         body = json.dumps({"d":data})
@@ -268,6 +274,11 @@ class CleverTap(object):
 
         except Exception, e:
             print e
+            try:
+                return e.read()
+            except Exception, e:
+                pass
+
             return None
 
         # Parse and return the response
@@ -374,24 +385,6 @@ class CleverTap(object):
                         validation_error = "record with type event must contain an evtData dict: %s"%record
                         return validation_error
                         break
-
-        if type == "profiles":
-            # query = json.loads(data)
-
-            # event_name is a compulsory parameter
-            if "event_name" not in data:
-                validation_error = "Event Name is missing"
-                return validation_error
-
-            # from is a compulsory parameter
-            if "from" not in data:
-                validation_error = "\'From\' is missing"
-                return validation_error
-
-            # to is a compulsory parameter
-            if "to" not in data:
-                validation_error = "\'To\' is missing"
-                return validation_error
 
         return validation_error
 

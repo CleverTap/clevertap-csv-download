@@ -48,9 +48,7 @@ def _convert_to_csv(result, pathcsv):
         try:
             res = _flatten(row)
             _add_to_field_names(res.keys(), main_list_of_fields)
-            # res = {k: unicode(v).encode("utf-8") for k,v in res.iteritems()}
             res = {k: str(v) for k,v in res.iteritems()}
-
             result_list.append(res)
         except Exception, e:
             print e
@@ -70,9 +68,9 @@ def _convert_to_csv(result, pathcsv):
     print "Download Complete!"
 
 
-def main(account_id, passcode, path_json, path_csv, type_of_download, dryrun):
+def main(account_id, passcode, region, path_json, path_csv, type_of_download):
 
-    clevertap = CleverTap(account_id, passcode)
+    clevertap = CleverTap(account_id, passcode, region=region)
     result = []
 
     if type_of_download not in ["event", "profile"]:
@@ -100,21 +98,15 @@ def main(account_id, passcode, path_json, path_csv, type_of_download, dryrun):
 
 
 if __name__ == "__main__":
-    def str2bool(v):
-        return v.lower() in ("yes", "true", "t", "1")
-
-
     parser = argparse.ArgumentParser(description='CleverTap CSV downloader')
-    parser.register('type', 'bool', str2bool)
     parser.add_argument('-a', '--id', help='CleverTap Account ID', required=True)
     parser.add_argument('-c', '--passcode', help='CleverTap Account Passcode', required=True)
+    parser.add_argument('-r','--region', help='Your dedicated CleverTap Region', required=False)
     parser.add_argument('-pjson', '--pathjson', help='Absolute path to the json file', required=True)
     parser.add_argument('-pcsv', '--pathcsv', help='Absolute path to the csv file', required=True)
-    parser.add_argument('-t', '--t', help='The type of data, either profile or event, defaults to profile',
+    parser.add_argument('-t', '--type', help='The type of data, either profile or event, defaults to profile',
                         default="profile")
-    parser.add_argument('-d', '--dryrun', help='Do a dry run, process records but do not upload', default=False,
-                        type='bool')
 
     args = parser.parse_args()
 
-    main(args.id, args.passcode, args.pathjson, args.pathcsv, args.t, args.dryrun)
+    main(args.id, args.passcode, args.region, args.pathjson, args.pathcsv, args.type)
