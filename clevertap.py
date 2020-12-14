@@ -18,9 +18,6 @@ __all__ = ['CleverTap']
 
 import json
 import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
-
-
 import time
 
 class CleverTap(object):
