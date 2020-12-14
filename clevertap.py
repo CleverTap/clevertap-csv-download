@@ -193,7 +193,6 @@ class CleverTap(object):
             # construct the request url
             # add the cursor
             self.url = "%s?cursor=%s"%(self.baseurl, self.cursor)
-            print(("url: %s" % self.url))
 
             # convenience inner function to handle cursor requests 
             def call_records():
