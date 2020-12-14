@@ -15,7 +15,7 @@ def _flatten(structure, key="", flattened=None):
         flattened = {}
     if type(structure) not in (dict, list):
         if isinstance(structure, str):
-            flattened[key] = "\"" + str(structure.encode("UTF-8")) + "\""
+            flattened[key] = "\"" + structure + "\""
         else:
             flattened[key] = str(structure)
     elif isinstance(structure, list):
