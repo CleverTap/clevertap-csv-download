@@ -19,23 +19,6 @@ __all__ = ['CleverTap']
 import json
 import urllib.request, urllib.parse, urllib.error
 import urllib.request, urllib.error, urllib.parse
-import future
-# try:
-#     from urllib.parse import urlparse, urlencode
-#     from urllib.request import urlopen, Request
-#     from urllib.error import HTTPError
-# except ImportError:
-#     from urlparse import urlparse
-#     from urllib import urlencode
-#     from urllib2 import urlopen, Request, HTTPError
-
-
-from future.standard_library import install_aliases
-install_aliases()
-
-from urllib.parse import urlparse, urlencode
-from urllib.request import urlopen, Request
-from urllib.error import HTTPError
 
 
 import time
