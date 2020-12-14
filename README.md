@@ -1,5 +1,10 @@
 ## CleverTap python csv download tool
 
+### Note:
+- this project is now moved to python3
+- python 2.x support is deprecated for this project 
+- for using python2 use release https://github.com/CleverTap/clevertap-csv-download/releases/tag/v1.0
+
 ### Usage
 to download user profiles/events to a csv:
 - git clone the repo (or simply copy-paste the files clevertap.py and csvdownload.py, and place them in the same folder)
