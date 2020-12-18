@@ -14,15 +14,15 @@ def _flatten(structure, key="", flattened=None):
     if flattened is None:
         flattened = {}
     if type(structure) not in (dict, list):
-        if isinstance(structure, basestring):
-            flattened[key] = "\"" + str(structure.encode("UTF-8")) + "\""
+        if isinstance(structure, str):
+            flattened[key] = "\"" + structure + "\""
         else:
             flattened[key] = str(structure)
     elif isinstance(structure, list):
         for i, item in enumerate(structure):
             _flatten(item, "%d" % i, flattened)
     else:
-        for new_key, value in structure.items():
+        for new_key, value in list(structure.items()):
             _flatten(value, new_key, flattened)
     return flattened
 
@@ -37,35 +37,35 @@ def _convert_to_csv(result, pathcsv):
     result_list = []
     main_list_of_fields = []
 
-    print "Received %s results" % len(result)
+    print(("Received %s results" % len(result)))
     if len(result) == 0:
-        print "No .csv file created"
+        print("No .csv file created")
         return
 
-    print "Converting to .csv format..."
+    print("Converting to .csv format...")
 
     for row in result:
         try:
             res = _flatten(row)
-            _add_to_field_names(res.keys(), main_list_of_fields)
-            res = {k: str(v) for k,v in res.iteritems()}
+            _add_to_field_names(list(res.keys()), main_list_of_fields)
+            res = {k: str(v) for k,v in res.items()}
             result_list.append(res)
-        except Exception, e:
-            print e
-            print "ERROR: Failed to process record: %s" % row
+        except Exception as e:
+            print(e)
+            print(("ERROR: Failed to process record: %s" % row))
 
-    with open(pathcsv, "wb") as csvfile:
+    with open(pathcsv, "w") as csvfile:
         writer = csv.DictWriter(csvfile, main_list_of_fields)
         writer.writeheader()
 
         for row in result_list:
             try:
                 writer.writerow(row)
-            except Exception, e:
-                print e
-                print "ERROR: Failed to write this record to CSV file: %s" % row
+            except Exception as e:
+                print(e)
+                print(("ERROR: Failed to write this record to CSV file: %s" % row))
 
-    print "Download Complete!"
+    print("Download Complete!")
 
 
 def main(account_id, passcode, region, path_json, path_csv, type_of_download):
@@ -78,7 +78,7 @@ def main(account_id, passcode, region, path_json, path_csv, type_of_download):
         return
 
     start_time = datetime.datetime.now()
-    print "Downloading..."
+    print("Downloading...")
     try:
         with open(path_json) as data_file:
             data = json.load(data_file)
@@ -88,13 +88,13 @@ def main(account_id, passcode, region, path_json, path_csv, type_of_download):
             result = clevertap.events(data, MAX_BATCH_SIZE)
         _convert_to_csv(result, path_csv)
 
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
 
     finally:
         end_time = datetime.datetime.now()
         processing_time = end_time - start_time
-        print "Processing Time: %s" % processing_time
+        print(("Processing Time: %s" % processing_time))
 
 
 if __name__ == "__main__":

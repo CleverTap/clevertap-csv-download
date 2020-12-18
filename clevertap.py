@@ -17,8 +17,7 @@
 __all__ = ['CleverTap']
 
 import json
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
 import time
 
 class CleverTap(object):
@@ -95,7 +94,7 @@ class CleverTap(object):
             url_action = action
 
         if not url_action:
-            print "unknown targets action %s" % action
+            print(("unknown targets action %s" % action))
             return
 
         if url_action == self.TargetActions.ESTIMATE:
@@ -164,7 +163,7 @@ class CleverTap(object):
         # construct the base request url
         self.baseurl = '/'.join([self.api_endpoint, "%s.json"%type])
 
-        _args = urllib.urlencode({"query":json.dumps(query), 'batch_size':batch_size})
+        _args = urllib.parse.urlencode({"query":json.dumps(query), 'batch_size':batch_size})
         # add query and batch_size as query args
         self.url = "%s?%s"%(self.baseurl, _args)
 
@@ -172,13 +171,13 @@ class CleverTap(object):
 
         # fetch initial cursor
         while True:
-            print 'fetching initial cursor'
+            print('fetching initial cursor')
             res = self._call(headers_params=headers_params) or {}
 
             if 'error' in res:
-                print res
+                print(res)
                 if res.get('code', -1) == 1:
-                    print "request throttled, retrying in 30"
+                    print("request throttled, retrying in 30")
                     time.sleep(30)
                 else:
                     # some other error abort
@@ -195,10 +194,9 @@ class CleverTap(object):
             # add the cursor
             self.url = "%s?cursor=%s"%(self.baseurl, self.cursor)
 
-
             # convenience inner function to handle cursor requests 
             def call_records():
-                print "calling %s records" % batch_size 
+                print(("calling %s records" % batch_size))
 
                 # make the request
                 res = self._call() or {}
@@ -206,10 +204,10 @@ class CleverTap(object):
                 # make sure the cursor is ready with data
                 cursor_ready =  not 'error' in res
                 if not cursor_ready:
-                    print res
+                    print(res)
                     if res.get('code', -1) == 2:
                         wait_interval = 5
-                        print "cursor not ready, retrying again in %s" % wait_interval
+                        print(("cursor not ready, retrying again in %s" % wait_interval))
                         time.sleep(wait_interval)
                         return
 
@@ -220,7 +218,7 @@ class CleverTap(object):
                 # add the new records array to our records array
                 self.records += new_records
 
-                print "Received %s records; have %s total records" % (len(new_records), len(self.records))
+                print(("Received %s records; have %s total records" % (len(new_records), len(self.records))))
 
                 # if the request returns a new cursor, update the api url with the new cursor
                 if self.cursor:
@@ -232,10 +230,10 @@ class CleverTap(object):
             # keep making requests with the new cursor as long as we have a cursor 
             while True:
                 if self.cursor is None:
-                    print "no cursor, finished fetching records"
+                    print("no cursor, finished fetching records")
                     break
                 else:
-                    print "have cursor %s" % self.cursor
+                    print(("have cursor %s" % self.cursor))
                     call_records()
 
         return self.records
@@ -244,7 +242,7 @@ class CleverTap(object):
     def _call(self, **kwargs):
 
         if self.url == None:
-            print "api url is None"
+            print("api url is None")
             return None
 
         headers_params = kwargs.get('headers_params', {}) 
@@ -254,29 +252,29 @@ class CleverTap(object):
         
         args = kwargs.get("args", None)
         if args:
-            args = urllib.urlencode(args)
+            args = urllib.parse.urlencode(args)
 
         body = kwargs.get("body", None)
 
         # Create the request
-        req = urllib2.Request(self.url, args, headers_params)
+        req = urllib.request.Request(self.url, args, headers_params)
 
         if body:
             req.add_data(body)
 
         try:
             # Open the request
-            f = urllib2.urlopen(req)
+            f = urllib.request.urlopen(req)
             # Get the response 
             response = f.read()
             # Close the opened request
             f.close()
 
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             try:
                 return e.read()
-            except Exception, e:
+            except Exception as e:
                 pass
 
             return None
@@ -284,8 +282,8 @@ class CleverTap(object):
         # Parse and return the response
         try:
             res = self._parse_response(response)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             res = None
 
         return res
@@ -294,7 +292,7 @@ class CleverTap(object):
         """Parse a response from the API"""
         try:
             res = json.loads(response)
-        except Exception, e:
+        except Exception as e:
             e.args += ('API response was: %s' % response)
             raise e
 
